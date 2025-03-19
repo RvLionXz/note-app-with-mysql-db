@@ -3,29 +3,45 @@ import 'package:note_pad_app/models/note.dart';
 import 'package:http/http.dart' as http;
 
 class NoteService {
-  static const String baseUrl = "http://10.0.2.2";
+  static const String url = "http://10.0.2.2:5000";
 
+  // Fungsi untuk mengambil data dari API
   static Future<List<Note>> getNotes() async {
-    try {
-      final response = await http.get(Uri.parse('$baseUrl/notes'));
+    final response = await http.get(Uri.parse("$url/notes"));
 
-      if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
-        return data.map((json) => Note.fromJson(json)).toList();
-      } else {
-        throw Exception("Failed to get data: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Error: $e");
-      rethrow;
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = json.decode(response.body);
+      List<Note> posts = jsonData.map((data) => Note.fromJson(data)).toList();
+      return posts;
+    } else {
+      throw Exception('Failed to load posts');
     }
   }
 
-  static Future<void> addNote(String title, String content) async {
-    await http.post(
-      Uri.parse('$baseUrl/notes'),
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: {"title": title, "content": content},
+  // Fungsi untuk menambahkan data
+  static Future<void> createNotes(String title, String content) async {
+    final response = await http.post(
+      Uri.parse("$url/notes"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"title": title, "content": content}),
     );
+
+    if (response.statusCode == 200) {
+      print("Data Berhasil Ditambahkan");
+    } else {
+      print("Response body: ${response.body}");
+    }
+  }
+  
+  // Fungsi Menghapus Data
+  static Future<void> deleteNotes(int id) async {
+    final response = await http.delete(Uri.parse("$url/notes/$id"));
+
+    if (response.statusCode == 200) {
+      print("Note has been deleted");
+    }else {
+      print(response.body);
+    }
   }
 }
+

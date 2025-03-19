@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:note_pad_app/models/note.dart';
 import 'package:note_pad_app/services/note_services.dart';
+import 'add_note_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,7 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Note> notes = [];
-  bool loading = false;
+  bool loading = true;
 
   void fetchNotes() async {
     loading = true;
@@ -21,6 +22,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
     loading = false;
   }
+
 
   @override
   void initState() {
@@ -45,14 +47,50 @@ class _HomePageState extends State<HomePage> {
                 ? const Center(
                   child: CircularProgressIndicator(color: Colors.blue),
                 )
-                : ListView.builder(
-                  itemCount: notes.length,
-                  itemBuilder: (context, index) {
-                    final note = notes[index];
-                    return Card(child: ListTile(title: Text(note.toString())));
-                  },
+                : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView.builder(
+                    itemCount: notes.length,
+                    itemBuilder: (context, index) {
+                      final note = notes[index];
+                      return Card(
+                        clipBehavior: Clip.hardEdge,
+                        child: InkWell(
+                          splashColor: Colors.blue.withAlpha(30),
+                          onTap: () {
+                            debugPrint("Card Tap");
+                          },
+                          child: ListTile(
+                            title: Text(
+                              note.title,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(note.content),
+                            trailing: IconButton(
+                              onPressed: () async {
+                                await NoteService.deleteNotes(note.id);
+                                fetchNotes();
+                              },
+                              icon: Icon(Icons.delete),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const NotePages()),
+            );
+          },
+          backgroundColor: Colors.blue,
+          child: Icon(Icons.add, color: Colors.white),
+        ),
       ),
     );
   }
+  
 }
