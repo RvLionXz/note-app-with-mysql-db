@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:note_pad_app/services/note_services.dart';
+import 'package:note_pad_app/models/note.dart';
+import 'home_page.dart';
 
 class NotePages extends StatefulWidget {
   const NotePages({super.key});
@@ -12,7 +14,6 @@ class _NotePagesState extends State<NotePages> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
 
-
   void saveNote() {
     setState(() {
       final title = _titleController.text;
@@ -20,7 +21,10 @@ class _NotePagesState extends State<NotePages> {
 
       if (title.isNotEmpty && content.isNotEmpty) {
         NoteService.createNotes(title, content).then((_) {
-          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+          );
         });
         print("Title: $title, Content: $content");
       } else {

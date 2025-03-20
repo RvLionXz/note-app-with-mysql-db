@@ -23,7 +23,6 @@ class _HomePageState extends State<HomePage> {
     loading = false;
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -65,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                               note.title,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            subtitle: Text(note.content),
+                            subtitle: Text(note.content, maxLines: 2),
                             trailing: IconButton(
                               onPressed: () async {
                                 await NoteService.deleteNotes(note.id);
@@ -92,5 +91,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  
 }
